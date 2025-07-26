@@ -175,7 +175,7 @@ const datosBusqueda = {
   function filtrarColor(auto){
     const {color} = datosBusqueda;
     if(color){
-        return auto.color <= color;
+        return auto.color === color;
     }
 
     return true;
