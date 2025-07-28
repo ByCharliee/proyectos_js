@@ -8,6 +8,15 @@ let agregarCarrito = [];
 cargarEventListener();
 
 function cargarEventListener(){
+    //Cargar elementos de local storage
+    document.addEventListener('DOMContentLoaded', () => {
+        if(localStorage.length > 0){
+            agregarCarrito = JSON.parse(localStorage.getItem('cursos'));
+            carritoHtml();
+        }
+     })
+
+
     //Cuando se da click a Agregar Curso
     listaCursos.addEventListener('click', agregarCurso);
 
@@ -45,10 +54,15 @@ function eliminarCurso(e){
     agregarCarrito = agregarCarrito.filter(curso => curso.id !== cursoId);
     console.log(agregarCarrito);
 
+    //Sincronizar carrito con local storage
+    sincronizarCurso();
+
     //Vuelve a crear el Html para mostrar el carrito actualizado
     carritoHtml();
 
 }
+
+
 
 //Lee la información del curso seleccionado 
 function leerDatosCurso(curso){
@@ -73,12 +87,20 @@ function leerDatosCurso(curso){
          })
     }
     
+    //Almacena el objeto el local storage
+    sincronizarCurso();
 
     console.log(agregarCarrito);
     // console.log(verificarCurso('Guitarra para Principiantes'));
 
     carritoHtml();
 }
+
+//Almacena el objeto en local storage
+function sincronizarCurso(){
+    localStorage.setItem('cursos', JSON.stringify(agregarCarrito));
+}
+
 
 //Agrega el carrito al contenedor
 function carritoHtml(){
