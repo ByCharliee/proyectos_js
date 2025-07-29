@@ -26,6 +26,14 @@ class Presupuesto {
     nuevoGasto(gastoObj){
         this.gasto = [...this.gasto, gastoObj];
         console.log(this.gasto);
+        this.calcularRestante();
+    }
+
+    calcularRestante(){
+        const gastado = this.gasto.reduce((total, gastoNuevo) => total + gastoNuevo.cantidad, 0);
+        console.log(gastado);
+        this.restante = this.presupuesto - gastado;
+        console.log(this.restante);
     }
 }
 
@@ -45,7 +53,7 @@ class UI {
     imprimirAlerta(mensaje, tipo){
 
         //Limpiar el HTML
-        limpiarHtml();
+        this.limpiarHtml();
        
         const divAlerta = document.createElement('DIV');
         divAlerta.classList.add('text-center', 'alert');
@@ -96,6 +104,19 @@ class UI {
         });
 
     }
+
+    //Actualiza el valor restante en HTML
+    actualizarRestante(restante){
+        document.querySelector('#restante').textContent = restante;
+
+    }
+
+
+    limpiarHtml(){
+        while(gastoListado.firstChild){
+            gastoListado.removeChild(gastoListado.firstChild);
+        }
+    }
 }
 
 //Instancias
@@ -135,7 +156,7 @@ function agregarGasto(e){
 
     
     const nombre = document.querySelector('#gasto').value;
-    const cantidad = document.querySelector('#cantidad').value;
+    const cantidad = Number(document.querySelector('#cantidad').value);
 
     
     //Validar información
@@ -156,16 +177,15 @@ function agregarGasto(e){
     ui.imprimirAlerta('Gasto agregado correctamente');
 
     //Agragar listado de gastos
-    const {gasto} = presupuestoObj;
+    const {gasto, restante} = presupuestoObj;
     ui.agragarGastoListado(gasto);
+
+    //Actualizar el restante en html
+    ui.actualizarRestante(restante);
+
 
     //Limpiar el formulario
     formulario.reset();
 
 }
 
-function limpiarHtml(){
-    while(gastoListado.firstChild){
-        gastoListado.removeChild(gastoListado.firstChild);
-    }
-}
