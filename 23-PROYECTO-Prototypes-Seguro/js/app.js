@@ -56,6 +56,7 @@ Seguro.prototype.cotizarSeguro = function(){
      }
 
      console.log(cotizacion);
+     return cotizacion;
 
 }
 
@@ -80,6 +81,49 @@ UI.prototype.llenarOpciones = () => {
     }
 
 }
+
+//Mostrar resultado de cotización
+UI.prototype.mostrarResultado = (seguro, total) => {
+    //Destructuring al objeto seguro
+    let {marca, year, tipo} = seguro;
+    switch(marca){
+        case '1':
+            marca = 'Americano';
+            break;
+        case '2':
+            marca = 'Asiático';
+            break;
+        case '3':
+            marca = 'Americano';
+            break;
+        default:
+            break;
+    }
+
+    //Html del resultado
+    const div = document.createElement('DIV');
+    div.classList.add('mt-10');
+    div.innerHTML = `
+        <p class = "header">Tu Resumen</p>
+        <p class = "font-bold" >Marca: <span class  = "font-normal"> ${marca} </span></p>
+        <p class = "font-bold" >Año: <span class = "font-normal"> ${year} </span></p>
+        <p class = "font-bold" >Tipo de seguro: <span class = "font-normal capitalize"> ${tipo} </span></p>
+        <p class = "font-bold" >Total: <span class = "font-normal">$ ${total} </span></p>
+    
+    `
+
+    const resultado = document.querySelector('#resultado');
+
+    const spinner = document.querySelector('#cargando');
+    spinner.style.display = 'block';
+
+    setTimeout(() => {
+        spinner.style.display = 'none';
+        resultado.appendChild(div);
+    }, 3000);
+
+
+ }
 
 //Muestra mensaje
 UI.prototype.mostrarAlerta = (mensaje, tipo) => {
@@ -151,9 +195,18 @@ function cotizarSeguro(e){
 
    ui.mostrarAlerta("Cotizando", true);
 
+   const resultado = document.querySelector('#resultado div');
+   if(resultado != null){
+    resultado.remove();
+   }
+
    //Instanciar el seguro
    const seguro = new Seguro(marca, year, tipo);
-   seguro.cotizarSeguro();
+   const total = seguro.cotizarSeguro();
+
+   //Mostrar el resultado de la cotización
+
+   ui.mostrarResultado(seguro, total);
 
 }
 
