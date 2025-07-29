@@ -22,6 +22,11 @@ class Presupuesto {
         this.restante = Number(presupuesto);
         this.gasto = [];
     }
+
+    nuevoGasto(gastoObj){
+        this.gasto = [...this.gasto, gastoObj];
+        console.log(this.gasto);
+    }
 }
 
 class UI {
@@ -38,6 +43,9 @@ class UI {
     }
 
     imprimirAlerta(mensaje, tipo){
+
+        //Limpiar el HTML
+        limpiarHtml();
        
         const divAlerta = document.createElement('DIV');
         divAlerta.classList.add('text-center', 'alert');
@@ -59,6 +67,35 @@ class UI {
         }, 2000);
 
     }
+
+    agragarGastoListado(listaGasto){
+
+        //Iterar sobre los gastos
+        listaGasto.forEach(gasto => {
+            const {nombre, cantidad, id} = gasto;
+
+            //Crear li
+            const nuevoGasto = document.createElement('li');
+            nuevoGasto.className = 'list-group-item d-flex justify-content-between align-items-center';
+            nuevoGasto.dataset.id = id;
+
+            //Agregar el html de gasto
+            nuevoGasto.innerHTML = `
+                ${nombre} <span class = "badge badge-primary badge-pill ">$${cantidad}</span>
+            `
+
+            //Agregar boton de borrar gasto 
+            const btnBorrar = document.createElement('button');
+            btnBorrar.classList.add('btn', 'btn-danger', 'borrar-gasto');
+            btnBorrar.innerHTML = `Borrar &times`;
+            nuevoGasto.appendChild(btnBorrar);
+
+            //Agregar al HTML
+            gastoListado.appendChild(nuevoGasto);
+
+        });
+
+    }
 }
 
 //Instancias
@@ -69,7 +106,7 @@ let presupuestoObj;
 
 
 
-//Funciones
+//Funciones------------
 
 function preguntarPresupuesto(){
     const presupuestoValido = Number(prompt('Ingresa tu presupuesto: '));
@@ -97,12 +134,12 @@ function agregarGasto(e){
     }
 
     
-    const gasto = document.querySelector('#gasto').value;
+    const nombre = document.querySelector('#gasto').value;
     const cantidad = document.querySelector('#cantidad').value;
 
     
     //Validar información
-    if(gasto === '' || cantidad === ''){
+    if(nombre === '' || cantidad === ''){
         ui.imprimirAlerta('Ambos campos son obligatorios', 'error');
         return;
     }else if(cantidad <= 0 || isNaN(cantidad)){
@@ -111,5 +148,24 @@ function agregarGasto(e){
         return;
     }
 
-    ui.imprimirAlerta('Correcto', 'exito');
+    //Crear objeto de presupuesto
+    const gastoObj = {nombre, cantidad, id: Date.now()}; 
+    presupuestoObj.nuevoGasto(gastoObj);
+
+    //Imprimir alerta de agregado 
+    ui.imprimirAlerta('Gasto agregado correctamente');
+
+    //Agragar listado de gastos
+    const {gasto} = presupuestoObj;
+    ui.agragarGastoListado(gasto);
+
+    //Limpiar el formulario
+    formulario.reset();
+
+}
+
+function limpiarHtml(){
+    while(gastoListado.firstChild){
+        gastoListado.removeChild(gastoListado.firstChild);
+    }
 }
