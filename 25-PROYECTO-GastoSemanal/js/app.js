@@ -20,22 +20,23 @@ class Presupuesto {
     constructor(presupuesto) {
         this.presupuesto = Number(presupuesto);
         this.restante = Number(presupuesto);
-        this.gasto = [];
+        this.gastoArr = [];
     }
 
     nuevoGasto(gastoObj){
-        this.gasto = [...this.gasto, gastoObj];
-        console.log(this.gasto);
+        this.gastoArr = [...this.gastoArr, gastoObj];
+        console.log(this.gastoArr);
         this.calcularRestante();
     }
 
     calcularRestante(){
-        const gastado = this.gasto.reduce((total, gastoNuevo) => total + gastoNuevo.cantidad, 0);
+        const gastado = this.gastoArr.reduce((total, gastoNuevo) => total + gastoNuevo.cantidad, 0);
         console.log(gastado);
         this.restante = this.presupuesto - gastado;
         console.log(this.restante);
     }
-}
+}//fin de clase Presupuesto--------
+
 
 class UI {
     
@@ -52,9 +53,7 @@ class UI {
 
     imprimirAlerta(mensaje, tipo){
 
-        //Limpiar el HTML
-        this.limpiarHtml();
-       
+        
         const divAlerta = document.createElement('DIV');
         divAlerta.classList.add('text-center', 'alert');
         divAlerta.id = 'alerta-formulario';
@@ -77,6 +76,10 @@ class UI {
     }
 
     agragarGastoListado(listaGasto){
+
+        //Limpiar el HTML
+        this.limpiarHtml();
+       
 
         //Iterar sobre los gastos
         listaGasto.forEach(gasto => {
@@ -111,13 +114,41 @@ class UI {
 
     }
 
+    //comprueba el restante
+    comprobarRestante(comprobarObj){
+        const {presupuesto, restante} = comprobarObj;
+       
+        
+        const divRestante = document.querySelector('.restante');
+
+        if((presupuesto * 0.25) > restante ){
+            divRestante.classList.remove('alert-success', 'alert-warning');
+            divRestante.classList.add('alert-danger');
+        }else if ((presupuesto * 0.5) >= restante){
+            divRestante.classList.remove('alert-success');
+            divRestante.classList.add('alert-warning');
+        }
+
+    //Comprobar si se ha terminado el presupuesto
+    if(restante <= 0){
+        this.imprimirAlerta('El presupuesto se ha agotado', 'error');
+
+        formulario.querySelector('button[type = "submit"]').disabled = true;
+    }    
+
+
+
+    }
+
 
     limpiarHtml(){
         while(gastoListado.firstChild){
             gastoListado.removeChild(gastoListado.firstChild);
         }
     }
-}
+}//fin de clase UI-------------------
+
+
 
 //Instancias
 
@@ -140,8 +171,6 @@ function preguntarPresupuesto(){
 
     //Crear objeto con presupuesto válido
     presupuestoObj = new Presupuesto(presupuestoValido);
-
-    console.log(presupuestoObj);
 
     ui.insertarPresupuesto(presupuestoObj);
 }
@@ -169,6 +198,14 @@ function agregarGasto(e){
         return;
     }
 
+    //Validar que el restante alcance para el gasto
+    
+    if(cantidad > presupuestoObj.restante){
+        ui.imprimirAlerta('El presupuesto restante no cubre el gasto', 'error');
+        return;
+    }
+
+
     //Crear objeto de presupuesto
     const gastoObj = {nombre, cantidad, id: Date.now()}; 
     presupuestoObj.nuevoGasto(gastoObj);
@@ -177,12 +214,14 @@ function agregarGasto(e){
     ui.imprimirAlerta('Gasto agregado correctamente');
 
     //Agragar listado de gastos
-    const {gasto, restante} = presupuestoObj;
-    ui.agragarGastoListado(gasto);
+    const {gastoArr, restante} = presupuestoObj; 
+    ui.agragarGastoListado(gastoArr);
 
     //Actualizar el restante en html
     ui.actualizarRestante(restante);
 
+    //Comprueba el porcentaje de presupuesto restante
+    ui.comprobarRestante(presupuestoObj);
 
     //Limpiar el formulario
     formulario.reset();
