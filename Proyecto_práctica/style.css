@@ -1,0 +1,57 @@
+/* style.css */
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+  }
+  
+  .contenedor {
+    max-width: 600px;
+    margin: 2rem auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+  }
+  
+  form {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .lista-tareas li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    background: #eee;
+    border-left: 5px solid gray;
+    text-transform: capitalize;
+  }
+  
+  .lista-tareas li.alta {
+    border-color: red;
+  }
+  .lista-tareas li.media {
+    border-color: orange;
+  }
+  .lista-tareas li.baja {
+    border-color: green;
+  }
+  
+  .alerta {
+    margin-bottom: 1rem;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    padding: 0.5rem;
+    
+  }
+  .alerta-error {
+    text-align: center;
+    background-color: red;
+  }
+  .alerta-success {
+    text-align: center;
+    background-color: green;
+  }
+  

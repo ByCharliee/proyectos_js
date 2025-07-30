@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Administrador de Tareas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="contenedor">
+    <h1>Administrador de Tareas</h1>
+    
+    <form id="formulario-tarea">
+      <input type="text" id="nombre" placeholder="Nombre de la tarea">
+      <select id="prioridad">
+        <option value="" selected disabled>Selecciona Prioridad</option>
+        <option value="alta">Alta</option>
+        <option value="media">Media</option>
+        <option value="baja">Baja</option>
+      </select>
+      <button type="submit">Agregar Tarea</button>
+    </form>
+
+    <h2>Tareas Pendientes</h2>
+    <ul id="lista-tareas" class="lista-tareas"></ul>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
