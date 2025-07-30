@@ -25,40 +25,39 @@ class Presupuesto {
 
     nuevoGasto(gastoObj){
         this.gastoArr = [...this.gastoArr, gastoObj];
-        console.log(this.gastoArr);
         this.calcularRestante();
     }
 
     calcularRestante(){
         const gastado = this.gastoArr.reduce((total, gastoNuevo) => total + gastoNuevo.cantidad, 0);
-        console.log(gastado);
         this.restante = this.presupuesto - gastado;
-        console.log(this.restante);
-
-
     }
 
-    eliminarGasto(elemento){
+    eliminarGasto(id){
+        
+        //Forma anterior------------
+
+        // //Ubicar el objeto por el id
+        // const gastoObj = this.gastoArr.find((gasto) => gasto.id == elemento.dataset.id ); 
+        // const {cantidad} = gastoObj;
+
+        // //Sumar rembolso a restante
+        
+        // this.restante += cantidad;
+
+        // //Eliminar del arreglo
+        // this.gastoArr = this.gastoArr.filter((gasto) => gasto.id != id );
+
+        //Optimización de lógica y código
+        this.gastoArr = this.gastoArr.filter((gasto) => gasto.id != id );
+        this.calcularRestante();
         
 
-        //Ubicar el objeto por el id
-        const gastoObj = this.gastoArr.find((gasto) => gasto.id == elemento.dataset.id ); 
-        const {cantidad} = gastoObj;
 
-        //Sumar rembolso a restante
-        
-        this.restante += cantidad;
-
-        //Eliminar del arreglo
-        this.gastoArr = this.gastoArr.filter((gasto) => gasto.id != elemento.dataset.id );
-        
-        
-
-
-        console.log(elemento);
-        console.log(gastoObj);
-        console.log(`Cantidad: ${cantidad}`);
-        console.log(this.restante);
+        // console.log(elemento);
+        // console.log(gastoObj);
+        // console.log(`Cantidad: ${cantidad}`);
+        // console.log(this.restante);
     }
 }//fin de clase Presupuesto--------
 
@@ -100,7 +99,7 @@ class UI {
 
     }
 
-    agragarGastoListado(listaGasto){
+    mostrarListado(listaGasto){
 
         //Limpiar el HTML
         this.limpiarHtml();
@@ -125,8 +124,8 @@ class UI {
             btnBorrar.classList.add('btn', 'btn-danger', 'borrar-gasto');
             btnBorrar.innerHTML = `Borrar &times`;
             btnBorrar.onclick = () => {
-                const elemento = gastoListado.querySelector(`[data-id ="${id}"]`);
-                eliminarGasto(elemento);
+                //Anteriormente, se pasaba todo el elemento html como parámetro para borrarlos uno por uno
+                eliminarGasto(id);
              }
             nuevoGasto.appendChild(btnBorrar);
 
@@ -251,7 +250,7 @@ function agregarGasto(e){
 
     //Agragar listado de gastos
     const {gastoArr, restante} = presupuestoObj; 
-    ui.agragarGastoListado(gastoArr);
+    ui.mostrarListado(gastoArr);
 
     //Actualizar el restante en html
     ui.actualizarRestante(restante);
@@ -269,15 +268,19 @@ function eliminarGasto(elemento){
     //Llama a la función dentro de la clase
     presupuestoObj.eliminarGasto(elemento);
 
-    //Actualizamos el html
-    const {restante} = presupuestoObj;
+    //Actualizamos el listado
+    const {gastoArr,restante} = presupuestoObj;
+    ui.mostrarListado(gastoArr); //Se actualizó la lista completa en lugar de ir localizando cada elemento
+
+    //Actualizamos el html de restante
     ui.actualizarRestante(restante);
 
-    //Comprobamos el restante
+    //Comprobamos el presupuesto
     ui.comprobarRestante(presupuestoObj);
 
-    //Se elimina el gasto de la lista
-    elemento.remove();
+    //Forma antigua--------
+    // //Se elimina el gasto de la lista
+    // elemento.remove();
    
     
 
