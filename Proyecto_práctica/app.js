@@ -24,13 +24,14 @@ class Tarea {
     }
 
 
+
 }
 
 class UI {
 
     mostrarAlerta(mensaje, tipo){
         const divMensaje = document.createElement('div');
-        divMensaje.classList.add('alerta');
+        divMensaje.classList.add('alerta', 'contenedor-alerta');
         if(tipo === 'error'){
             console.log("Desde mostrar alerta");
             divMensaje.classList.remove('alerta-success');
@@ -46,7 +47,7 @@ class UI {
         //Retirar alerta 
         setTimeout(() => {
             divMensaje.remove();
-        }, 3000);
+        }, 2000);
     }
 
     mostrarlistado(listado){
@@ -55,9 +56,22 @@ class UI {
         this.limpiarHtml();
 
         listado.forEach((elemento) => {
+            const {id, nombre, prioridad} = elemento;
+            //Crear la tarea
             const tarea = document.createElement('li');
-            tarea.classList.add(`${elemento.prioridad}`);
-            tarea.textContent = elemento.nombre;
+            tarea.classList.add(`prioridad`, `${prioridad}`);
+            tarea.textContent = nombre;
+
+            //Creando botón para eliminar la tarea
+            const btnEliminar = document.createElement('button');
+            btnEliminar.classList.add('eliminar-btn');
+            btnEliminar.textContent = "X";
+
+            btnEliminar.onclick = () => {
+                eliminarTarea(id);
+             }
+
+            tarea.appendChild(btnEliminar);
 
             listaTareas.appendChild(tarea);
          })
@@ -112,8 +126,6 @@ function ingresarTarea(e){
     console.log(tareaArr);
 }
 
-//Validar la tarea
-
 function validarTarea(nombre, prioridad){
     //Validamos los campos del formulario
     let validacion = true;
@@ -132,4 +144,14 @@ function validarTarea(nombre, prioridad){
 
 
     return validacion;
+}
+
+function eliminarTarea(id){
+    //Creamos nuevo arreglo con las tareas restantes
+    tareaArr = tareaArr.filter(tarea => tarea.id !== id);
+
+    console.log(tareaArr);
+
+    //actualizamos html
+    ui.mostrarlistado(tareaArr);
 }
