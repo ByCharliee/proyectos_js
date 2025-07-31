@@ -95,7 +95,7 @@ class UI {
         //Remover div
         setTimeout(() => {
             divAlerta.remove();
-        }, 2000);
+        }, 3000);
 
     }
 
