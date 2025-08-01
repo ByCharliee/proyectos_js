@@ -1,0 +1,39 @@
+/* Puedes añadir más estilos personalizados aquí si lo necesitas */
+
+.topo {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(150, 75, 0); /* Color del topo, puedes usar una imagen */
+    border-radius: 50%; /* Para que sea circular */
+    position: absolute;
+    bottom: -100%; /* Inicialmente escondido */
+    transition: bottom 0.2s ease-out; /* Animación de aparición/desaparición */
+    cursor: pointer;
+    display: flex; /* Para centrar ojos o boca si los agregas */
+    align-items: center;
+    justify-content: center;
+}
+
+.topo.visible {
+    bottom: 0; /* Visible */
+}
+
+/* Opcional: Estilo de golpe (feedback visual) */
+.topo.golpeado {
+    background-color:  rgb(82, 44, 44); /* Un poco más oscuro */
+}
+
+/* Para la UI de un "topo" básico dentro del agujero */
+.agujero .topo::after {
+    content: ''; /* Pseudo-elemento para simular ojos o nariz */
+
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 35%;
+    left: 35%; 
+    transform: translateX(-50%);
+    box-shadow: 40px 0 0 white;
+}
