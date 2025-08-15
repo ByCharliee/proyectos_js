@@ -2,6 +2,7 @@ import AdminCita from "./Classes/AdminCita.js";
 import Notificacion from "./Classes/Notificacion.js";
 import { formulario, registrar, pacienteInput, propietarioInput, emailInput, fechaInput, sintomasInput } from "./selectores.js";
 import { citaObj, editando } from "./variables.js";
+import { DB } from "./Database/database.js";
 
 
 const administrarCita = new AdminCita();
@@ -62,10 +63,28 @@ export function submitFormulario(e){
        //Añadir la cita al arreglo
        administrarCita.agregarCita({...citaObj});
 
-       //Mostrar mensaje de éxito
-       new Notificacion({
-           texto: "Cita agregada con éxito"
-       });
+       //Insertar registro a la tabla
+       const transaction = DB.transaction(['citas'], 'readwrite');
+
+       //Habilitar el object store
+       const objectStore = transaction.objectStore('citas');
+
+       //Añadir registro
+       objectStore.add(citaObj);
+
+       transaction.oncomplete = () => {
+            console.log("Registro ingresado correctamente");
+
+            //Mostrar mensaje de éxito
+            new Notificacion({
+            texto: "Cita agregada con éxito"
+            });
+
+            administrarCita.mostrarCita();
+          
+        }
+
+      
    }
 
   

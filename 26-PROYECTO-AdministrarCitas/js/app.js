@@ -1,9 +1,18 @@
 import {pacienteInput,propietarioInput, emailInput,fechaInput,sintomasInput, formulario} from "./selectores.js"
 import { datosCita, submitFormulario } from "./funciones.js";
+import { crearDB } from "./Database/database.js";
+import AdminCita from "./Classes/AdminCita.js";
+
+
+window.onload = () => {
+    eventosListeners();
+    crearDB(() => {
+        new AdminCita().mostrarCita();
+     });
+    
+ }
 
 //Eventos 
-eventosListeners();
-
 function eventosListeners(){
     pacienteInput.addEventListener('blur', datosCita);
     propietarioInput.addEventListener('blur', datosCita);
