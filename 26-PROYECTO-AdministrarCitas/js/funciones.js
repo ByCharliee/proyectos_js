@@ -58,19 +58,35 @@ export function submitFormulario(e){
 
    //Verificar editando
    if(editando.value){
-       administrarCita.editarCita({...citaObj});
+    //    administrarCita.editarCita({...citaObj});
+
+       const transaction = DB.transaction(['citas'], 'readwrite');
+       const objectStore = transaction.objectStore('citas');
+
+       //Actualzar el registro
+       objectStore.put({...citaObj});
+
+
+       transaction.oncomplete = () => {
+           console.log('Cita actualizada con éxito');
+           administrarCita.mostrarCita();
+        }
+
+        transaction.onerror = (e) => {
+            console.log(e.target.error?.message);
+         }
+
    }else{
        //Añadir la cita al arreglo
-       administrarCita.agregarCita({...citaObj});
+    //    administrarCita.agregarCita({...citaObj});
 
-       //Insertar registro a la tabla
        const transaction = DB.transaction(['citas'], 'readwrite');
 
        //Habilitar el object store
        const objectStore = transaction.objectStore('citas');
 
        //Añadir registro
-       objectStore.add(citaObj);
+       objectStore.add({...citaObj});
 
        transaction.oncomplete = () => {
             console.log("Registro ingresado correctamente");
@@ -107,20 +123,30 @@ export function generarId(){
 export function resetearObjeto(){
    for(let key in citaObj){
        citaObj[key]= '';
-       if(key == 'id') citaObj[key] =  generarId();
+       if(key == 'id' && !editando.value) citaObj[key] =  generarId();
        console.log(key + ": " + citaObj[key]);
    }
 }
 
 export function cargarEditar(cita){
-   
-   Object.assign(citaObj, cita);
 
-   pacienteInput.value = citaObj.paciente
-   propietarioInput.value = citaObj.propietario
-   emailInput.value = citaObj.email
-   fechaInput.value = citaObj.fecha
-   sintomasInput.value = citaObj.sintomas
+    const {paciente, propietario, email, fecha, sintomas, id} = cita;
+   
+   citaObj.paciente = paciente;
+   citaObj.propietario = propietario;
+   citaObj.email = email;
+   citaObj.fecha = fecha;
+   citaObj.sintomas = sintomas;
+   citaObj.id = id;
+
+   console.log(citaObj);
+
+
+   pacienteInput.value = paciente
+   propietarioInput.value = propietario
+   emailInput.value = email
+   fechaInput.value = fecha
+   sintomasInput.value = sintomas
 
    editando.value = true;
    registrar.value = "Guardar Cambios";

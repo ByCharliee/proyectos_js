@@ -9,22 +9,38 @@ export default class AdminCita{
         console.log(this.citaArr);
     }
 
-    agregarCita(cita){
-        this.citaArr = [...this.citaArr, cita];
-        this.mostrarCita();
-    }
+    // agregarCita(cita){
+    //     this.citaArr = [...this.citaArr, cita];
+    //     this.mostrarCita();
+    // }
 
-    editarCita(citaActualizada){
-        this.citaArr = this.citaArr.map( cita => cita.id === citaActualizada.id ? citaActualizada : cita );
-        this.mostrarCita();
-        console.log(this.citaArr);
-    }
+    // editarCita(citaActualizada){
+    //     // this.citaArr = this.citaArr.map( cita => cita.id === citaActualizada.id ? citaActualizada : cita );
+
+    //     this.mostrarCita();
+    //     console.log(this.citaArr);
+    // }
 
     eliminarCita(id){
-        this.citaArr = this.citaArr.filter(cita => cita.id !== id);
-        this.mostrarCita();
+        // this.citaArr = this.citaArr.filter(cita => cita.id !== id);
 
-        console.log(this.citaArr);
+        const transaction = DB.transaction(['citas'], 'readwrite');
+        const objectStore = transaction.objectStore('citas');
+
+        objectStore.delete(id);
+
+        transaction.oncomplete = () => {
+            console.log(`Cita ${id} eliminada con éxito`);
+
+            this.mostrarCita();
+         }
+
+        transaction.onerror = (e) => {
+            console.log(e.target.error?.message);
+         } 
+        
+
+        // console.log(this.citaArr);
     }
 
 
@@ -50,10 +66,11 @@ export default class AdminCita{
             const cursor = e.target.result;
 
             if(cursor){
-                const {paciente, propietario, email, fecha, sintomas} = cursor.value;
+                const {paciente, propietario, email, fecha, sintomas, id} = cursor.value;
                 const divCita = document.createElement('div');
                 divCita.classList.add('mx-5', 'my-10', 'bg-white', 'shadow-md', 'px-5', 'py-10' ,'rounded-xl', 'p-3');
-                divCita.dataset.id = citaObj.id;
+                divCita.dataset.id = id;
+                console.log(id);
             
                 const pacienteParrafo = document.createElement('p');
                 pacienteParrafo.classList.add('font-normal', 'mb-3', 'text-gray-700', 'normal-case')
@@ -79,7 +96,7 @@ export default class AdminCita{
                 const btnEditar = document.createElement('button');
                 btnEditar.classList.add('py-2', 'px-10', 'bg-indigo-600', 'hover:bg-indigo-700', 'text-white', 'font-bold', 'uppercase', 'rounded-lg', 'flex', 'items-center', 'gap-2');
                 btnEditar.innerHTML = 'Editar <svg fill="none" class="h-5 w-5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
-                const clone = structuredClone(cursor.value);
+                const clone = cursor.value;
                 btnEditar.onclick = (e) => {
                     cargarEditar(clone);
                 }
@@ -87,7 +104,7 @@ export default class AdminCita{
                 const btnEliminar = document.createElement('button');
                 btnEliminar.classList.add('py-2', 'px-10', 'bg-red-600', 'hover:bg-red-700', 'text-white', 'font-bold', 'uppercase', 'rounded-lg', 'flex', 'items-center', 'gap-2');
                 btnEliminar.innerHTML = 'Eliminar <svg fill="none" class="h-5 w-5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
-                btnEliminar.onclick = () => this.eliminarCita(cita.id);
+                btnEliminar.onclick = () => this.eliminarCita(id);
 
                 const contenedorBtn = document.createElement('DIV');
                 contenedorBtn.classList.add('flex', 'justify-between', 'mt-10');

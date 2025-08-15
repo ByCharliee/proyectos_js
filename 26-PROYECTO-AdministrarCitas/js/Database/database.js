@@ -11,8 +11,8 @@ export function crearDB(done){
         const db = e.target.result;
         
         const objectStore = db.createObjectStore('citas', {
-            ketpath: 'id', 
-            autoIncrement: true
+            keyPath: 'id', 
+            autoIncrement: false
         });
 
         objectStore.createIndex('paciente', 'paciente', {unique: false});
@@ -20,7 +20,7 @@ export function crearDB(done){
         objectStore.createIndex('email', 'email', {unique: false});
         objectStore.createIndex('fecha', 'fecha', {unique: false});
         objectStore.createIndex('sintomas', 'sintomas', {unique: false});
-        objectStore.createIndex('id', 'id', {unique: true});
+
 
      }
 
