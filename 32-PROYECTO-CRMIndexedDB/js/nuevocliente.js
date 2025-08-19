@@ -40,21 +40,26 @@
             const email = formulario.querySelector('#email').value;
             const telefono = formulario.querySelector('#telefono').value;
             const empresa = formulario.querySelector('#empresa').value;
+            
+            //crear objeto con los valores del cliente
+            const cliente = {nombre, email, telefono, empresa};
     
-            const formData = {nombre, email, telefono, empresa};
-    
-            if (Object.values(formData).some(value => value.trim() === '')) {
+            if (Object.values(cliente).some(value => value.trim() === '')) {
                 imprimirAlerta('Todos los campos son obligatorios', 'error');
                 return;
-            }else if (!validarEmail(formData.email)){
+            }else if (!validarEmail(cliente.email)){
                 imprimirAlerta('Ingrese un email válido', 'error');
                 return;
-            }else{
-                imprimirAlerta('Cliente agregado correctamente', 'exito');
             }
+
+            cliente.id = Date.now();
+
+            crearCliente(cliente);
     
             
         }
+
+       
 
         formulario.reset();
        
@@ -62,39 +67,29 @@
 
     }
 
-    function imprimirAlerta(mensaje, tipo){
-        const divMensaje = document.createElement('DIV');
-        divMensaje.classList.add('px-4', 'py-3', 'rounded', 'mx-w-lg', 'mx-auto', 'mt-6', 'text-center', 'border', 'alerta');
+    function crearCliente(cliente){
 
-        if(tipo === 'error'){
-            divMensaje.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
-        }else{
-            divMensaje.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
-        }
+        const transaction = DB.transaction(['crm'], 'readwrite');
+        const objectStore = transaction.objectStore('crm');
 
-        divMensaje.textContent = mensaje;
+        objectStore.add(cliente);
 
-        formulario.appendChild(divMensaje);
-
-        setTimeout(() => {
-            divMensaje.remove();
-        }, 3000);
-    }
-
-    function validarEmail(email){
-        const regex =  /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/ ;
-        const resultado = regex.test(email);
+        transaction.onerror = (e) => {
+            console.log(e.target.error?.message);
+         }
         
-        return resultado;
+        transaction.oncomplete = () => {
+            imprimirAlerta('El cliente se agregó correctamente');
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1200);
+         } 
+
     }
-     
-    function activarFormulario(){
-        if(document.querySelector('.alerta')){
-            document.querySelector('input[type="submit"]').disabled = true;
-        }else{
-            document.querySelector('input[type="submit"]').disabled = false;
-        }
-    }
+
+   
+
 
 
 
