@@ -60,7 +60,6 @@ window.addEventListener('load', () => {
 
 
 function consultarAPI(ciudad, pais){
-    
 
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad},${pais}&appid=${appId}`
 
