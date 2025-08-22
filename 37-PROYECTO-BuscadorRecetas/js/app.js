@@ -121,6 +121,33 @@ function iniciarApp(){
             <h3 class="my-3">Ingredients</h3>
         `
 
+        modalBody.appendChild(mostrarIngredientes(receta));
+
+        const modalFooter = document.querySelector('.modal-footer');
+        limpiarHTML(modalFooter);
+
+        const btnGuardar = document.createElement('BUTTON');
+        btnGuardar.classList.add('btn', 'btn-danger', 'col');
+        btnGuardar.textContent = 'Guardar en favoritos';
+
+        const btnCerrar = document.createElement('BUTTON');
+        btnCerrar.classList.add('btn', 'btn-secondary', 'col');
+        btnCerrar.textContent = 'Cerrar';
+        btnCerrar.onclick = function (){
+            modal.hide();
+        }
+
+        modalFooter.appendChild(btnGuardar);
+        modalFooter.appendChild(btnCerrar);
+
+        modal.show();
+
+
+    }
+
+   
+
+    function mostrarIngredientes(receta){
         //Mostrar lista de ingredientes
         const listGroup = document.createElement('UL');
         listGroup.classList.add('list-group');
@@ -139,11 +166,7 @@ function iniciarApp(){
             }
         }
 
-        modalBody.appendChild(listGroup);
-
-        modal.show();
-
-
+        return listGroup;
     }
 
     function limpiarHTML(selector){
