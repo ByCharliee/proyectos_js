@@ -3,14 +3,25 @@ document.addEventListener('DOMContentLoaded', iniciarApp);
 function iniciarApp(){
     const selectCategoria = document.querySelector('#categorias');
     const resultadoCategoria = document.querySelector('#resultado');
-
     const modal = new bootstrap.Modal('#modal', {});
-    selectCategoria.addEventListener('change', seleccionarCategoria);
+
+    if(selectCategoria){
+        selectCategoria.addEventListener('change', seleccionarCategoria);
+        obtenerCategorias();
+    }
+
+    const divFavoritos = document.querySelector('.favoritos');
+    if(divFavoritos){
+        obtenerFavoritos();
+
+    }
 
 
 
 
-    obtenerCategorias();
+
+
+   
 
     function obtenerCategorias(){
         const url = 'https://www.themealdb.com/api/json/v1/1/categories.php';
@@ -64,21 +75,21 @@ function iniciarApp(){
 
             const platilloImg = document.createElement('IMG');
             platilloImg.classList.add('card-img-top');
-            platilloImg.alt = `Imagen del platillo ${strMeal}`;
-            platilloImg.src = strMealThumb;
+            platilloImg.alt = `Imagen del platillo ${strMeal ?? platillo.titulo}`;
+            platilloImg.src = strMealThumb ?? platillo.img;
 
             const platilloCardBody = document.createElement('DIV');
             platilloCardBody.classList.add('card-body');
 
             const platilloCardHeading = document.createElement('H3');
             platilloCardHeading.classList.add('card-body', 'mb-3');
-            platilloCardHeading.textContent = strMeal;
+            platilloCardHeading.textContent = strMeal ?? platillo.titulo;
 
             const platilloButton = document.createElement('BUTTON');
             platilloButton.classList.add('btn', 'btn-danger', 'w-100');
             platilloButton.textContent = 'Ver Platillo';
             platilloButton.onclick = function(){
-                seleccionarPlatillo(idMeal);
+                seleccionarPlatillo(idMeal ?? platillo.id);
             }
 
             //Inyectar en el HTML
@@ -128,7 +139,26 @@ function iniciarApp(){
 
         const btnGuardar = document.createElement('BUTTON');
         btnGuardar.classList.add('btn', 'btn-danger', 'col');
-        btnGuardar.textContent = 'Guardar en favoritos';
+        btnGuardar.textContent = existeReceta(idMeal) ? 'Eliminar Favorito' : 'Guardar Favorito';
+        btnGuardar.onclick = function(){
+
+            if(existeReceta(idMeal)){
+                eliminarFavorito(idMeal);
+                btnGuardar.textContent = 'Guardar Favorito';
+                mostrarToast('Eliminado Correctamente');
+
+                return;
+            } 
+
+            añadirFavoritos({
+                id: idMeal,
+                titulo: strMeal,
+                img: strMealThumb
+            });
+
+            btnGuardar.textContent = 'Eliminar Favorito';
+            mostrarToast('Agregado Correctamente');
+        }
 
         const btnCerrar = document.createElement('BUTTON');
         btnCerrar.classList.add('btn', 'btn-secondary', 'col');
@@ -144,8 +174,6 @@ function iniciarApp(){
 
 
     }
-
-   
 
     function mostrarIngredientes(receta){
         //Mostrar lista de ingredientes
@@ -167,6 +195,56 @@ function iniciarApp(){
         }
 
         return listGroup;
+    }
+
+    function añadirFavoritos(receta){
+        const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
+        localStorage.setItem('favoritos', JSON.stringify([...favoritos, receta]));
+    }
+
+    function eliminarFavorito(id){
+        const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
+        const nuevoFavoritos = favoritos.filter(receta => receta.id !== id);
+
+        localStorage.setItem('favoritos',JSON.stringify(nuevoFavoritos));
+
+        if(divFavoritos){
+             limpiarHTML(divFavoritos);
+             mostrarPlatillo(nuevoFavoritos);
+             modal.hide();
+        }
+       
+    }
+
+    function existeReceta(id){
+        const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
+        return favoritos.some(receta => receta.id === id);
+        
+    }
+
+    function mostrarToast(mensaje){
+        const contenedorToast = document.querySelector('#toast');
+        const mensajeToast = document.querySelector('.toast-body');
+        const toast = new bootstrap.Toast(contenedorToast, {
+            delay: 1200, 
+            autohide: true
+        });
+        mensajeToast.textContent = mensaje; 
+
+        toast.show();
+    }
+
+    function obtenerFavoritos(){
+        const favoritos = JSON.parse(localStorage.getItem('favoritos')) ?? [];
+        if(favoritos.length){
+            mostrarPlatillo(favoritos);
+            return;
+        }
+
+        const noFavoritos = document.createElement('P');
+        noFavoritos.classList.add('fs-4', 'text-center', 'font-bold', 'mt-5');
+        noFavoritos.textContent = 'No hay favoritos aún';
+        divFavoritos.appendChild(noFavoritos);
     }
 
     function limpiarHTML(selector){
